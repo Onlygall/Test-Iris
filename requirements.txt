@@ -4,3 +4,6 @@ streamlit
 numpy
 pandas
 sckit-learn
+matplolip
+seaborn
+joblib
