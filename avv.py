@@ -79,8 +79,10 @@ elif page == "🔮 Prediksi":
     # Prediksi
     input_data = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
     prediction = model.predict(input_data)
-    prediction_idx = int(prediction[0])  # Pastikan integer
+    prediction_idx = int(np.array(prediction).flatten()[0])  # Perbaiki baris ini
     prediction_proba = model.predict_proba(input_data)[0]
+
+    #predicted_species = str(iris.target_names[prediction_idx]).capitalize()
 
     predicted_species = str(iris.target_names[prediction_idx]).capitalize()
     st.success(f"Prediksi: **{predicted_species}**")
