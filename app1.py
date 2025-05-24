@@ -1,82 +1,78 @@
-# -*- coding: utf-8 -*-
+# app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
 import joblib
+from sklearn.datasets import load_iris
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
 
-# ===============================
-# Load model and data
-# ===============================
-model = joblib.load('naive_bayes_model.pkl')  # Pastikan file ini tersedia
+# Load model dan dataset
+model = joblib.load('naive_bayes_iris_model.pkl')
 iris = load_iris()
-
-# Buat DataFrame dari data iris
 df = pd.DataFrame(iris.data, columns=iris.feature_names)
 df['target'] = iris.target
-target_names = iris.target_names
+df['target_name'] = df['target'].apply(lambda x: iris.target_names[x])
 
-# ===============================
-# Sidebar Navigation
-# ===============================
-st.sidebar.title("🌼 Iris Classifier App")
-page = st.sidebar.radio("Pilih Halaman", ["Deskripsi Data", "Prediksi", "Visualisasi"])
+# Sidebar untuk navigasi
+st.sidebar.title("🧪 Iris Classifier")
+page = st.sidebar.radio("Pilih Halaman", ["📄 Deskripsi Data", "🔮 Prediksi", "📊 Visualisasi"])
 
-# ===============================
-# Page 1: Deskripsi Data
-# ===============================
-if page == "Deskripsi Data":
-    st.title("🔍 Deskripsi Dataset Iris")
+# Halaman 1: Deskripsi Data
+if page == "📄 Deskripsi Data":
+    st.title("📄 Deskripsi Dataset Iris")
     st.markdown("""
-    Dataset Iris memiliki 150 data bunga dengan 4 fitur:
-    - Panjang sepal
-    - Lebar sepal
-    - Panjang petal
-    - Lebar petal
-    
-    Terdapat 3 jenis bunga:
+    Dataset Iris adalah kumpulan data klasik yang sering digunakan untuk masalah klasifikasi.
+    Dataset ini berisi 150 data bunga iris dengan fitur:
+    - Panjang dan lebar sepal
+    - Panjang dan lebar petal
+
+    Tiga jenis bunga iris:
     - Setosa
     - Versicolor
     - Virginica
     """)
-
-    st.subheader("Contoh Data")
     st.dataframe(df.head())
+    st.write("Distribusi Kelas:")
+    st.bar_chart(df['target_name'].value_counts())
 
-    st.subheader("Statistik Ringkasan")
-    st.write(df.describe())
+# Halaman 2: Prediksi
+elif page == "🔮 Prediksi":
+    st.title("🔮 Prediksi Spesies Iris")
+    st.write("Masukkan data bunga di bawah ini:")
 
-# ===============================
-# Page 2: Prediksi
-# ===============================
-elif page == "Prediksi":
-    st.title("🌸 Prediksi Jenis Bunga Iris")
-    st.write("Masukkan panjang dan lebar sepal & petal bunga:")
+    # Input fitur
+    sepal_length = st.slider('Panjang Sepal (cm)', 4.0, 8.0, 5.0)
+    sepal_width = st.slider('Lebar Sepal (cm)', 2.0, 4.5, 3.0)
+    petal_length = st.slider('Panjang Petal (cm)', 1.0, 7.0, 4.0)
+    petal_width = st.slider('Lebar Petal (cm)', 0.1, 2.5, 1.0)
 
-    # Input pengguna
-    sepal_length = st.slider("Sepal Length (cm)", 4.0, 8.0, 5.8)
-    sepal_width = st.slider("Sepal Width (cm)", 2.0, 4.5, 3.0)
-    petal_length = st.slider("Petal Length (cm)", 1.0, 7.0, 4.0)
-    petal_width = st.slider("Petal Width (cm)", 0.1, 2.5, 1.2)
+    # Prediksi
+    input_data = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
+    prediction = model.predict(input_data)[0]
+    prediction_proba = model.predict_proba(input_data)[0]
 
-    if st.button("Prediksi"):
-        input_data = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
-        prediction = model.predict(input_data)[0]
-        predicted_class = target_names[prediction]
-        st.success(f"Prediksi: **{predicted_class}** 🌼")
+    st.success(f"Prediksi: **{iris.target_names[prediction].capitalize()}**")
+    st.subheader("Probabilitas:")
+    st.bar_chart({
+        'Setosa': [prediction_proba[0]],
+        'Versicolor': [prediction_proba[1]],
+        'Virginica': [prediction_proba[2]],
+    })
 
-# ===============================
-# Page 3: Visualisasi
-# ===============================
-elif page == "Visualisasi":
-    st.title("📊 Visualisasi Dataset Iris")
+# Halaman 3: Visualisasi
+else:
+    st.title("📊 Visualisasi Data Iris")
+    st.write("Scatter plot fitur untuk melihat pola antara spesies.")
 
-    st.subheader("Pairplot Berdasarkan Jenis")
-    df_plot = df.copy()
-    df_plot['species'] = df_plot['target'].apply(lambda x: target_names[x])
-    sns.set(style="whitegrid")
-    fig = sns.pairplot(df_plot, hue="species", diag_kind="kde")
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    sns.scatterplot(ax=axes[0], data=df, x=iris.feature_names[0], y=iris.feature_names[1],
+                    hue='target_name', palette='Set2')
+    axes[0].set_title("Sepal: Panjang vs Lebar")
+
+    sns.scatterplot(ax=axes[1], data=df, x=iris.feature_names[2], y=iris.feature_names[3],
+                    hue='target_name', palette='Set1')
+    axes[1].set_title("Petal: Panjang vs Lebar")
+
     st.pyplot(fig)
