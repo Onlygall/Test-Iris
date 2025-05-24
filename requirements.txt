@@ -3,7 +3,7 @@
 streamlit
 numpy
 pandas
-sckit-learn
-matplolip
+scikit-learn
+matplotlip
 seaborn
 joblib
