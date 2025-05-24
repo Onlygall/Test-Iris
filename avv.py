@@ -7,23 +7,42 @@ Original file is located at
     https://colab.research.google.com/drive/1gMp7qyglE3qDftbl8AKpf3Yixle2kydq
 """
 
-# app.py
-#!pip install streamlit
-
 import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import os
 from sklearn.datasets import load_iris
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.naive_bayes import GaussianNB
 
-# Load model dan dataset
-model = joblib.load('naive_bayes_iris.pkl')
+# Load Iris dataset
 iris = load_iris()
 df = pd.DataFrame(iris.data, columns=iris.feature_names)
 df['target'] = iris.target
 df['target_name'] = df['target'].apply(lambda x: iris.target_names[x])
+
+# Load model or train if not found
+MODEL_PATH = 'naive_bayes_iris.pkl'
+
+def load_or_train_model():
+    if os.path.exists(MODEL_PATH):
+        try:
+            model = joblib.load(MODEL_PATH)
+        except Exception as e:
+            st.error(f"Model file found but could not be loaded: {e}")
+            return None
+    else:
+        st.warning("Model file not found. Training a new model and saving it as naive_bayes_iris.pkl.")
+        model = GaussianNB()
+        model.fit(iris.data, iris.target)
+        joblib.dump(model, MODEL_PATH)
+    return model
+
+model = load_or_train_model()
+if model is None:
+    st.stop()
 
 # Sidebar untuk navigasi
 st.sidebar.title("🧪 Iris Classifier")
@@ -60,10 +79,12 @@ elif page == "🔮 Prediksi":
 
     # Prediksi
     input_data = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
-    prediction = model.predict(input_data)[0]
+    prediction = model.predict(input_data)
+    prediction_idx = int(prediction[0])  # Ensure integer index
     prediction_proba = model.predict_proba(input_data)[0]
 
-    st.success(f"Prediksi: **{iris.target_names[prediction].capitalize()}**")
+    predicted_species = str(iris.target_names[prediction_idx]).capitalize()
+    st.success(f"Prediksi: **{predicted_species}**")
     st.subheader("Probabilitas:")
     st.bar_chart({
         'Setosa': [prediction_proba[0]],
