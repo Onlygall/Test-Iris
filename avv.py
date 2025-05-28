@@ -92,26 +92,8 @@ elif page == "🔮 Prediksi":
         'Versicolor': [prediction_proba[1]],
         'Virginica': [prediction_proba[2]],
     })
-
-# Halaman 3: Visualisasi
-elif:
-    st.title("📊 Visualisasi Data Iris")
-    st.write("Scatter plot fitur untuk melihat pola antara spesies.")
-
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    sns.scatterplot(ax=axes[0], data=df, x=iris.feature_names[0], y=iris.feature_names[1],
-                    hue='target_name', palette='Set2')
-    axes[0].set_title("Sepal: Panjang vs Lebar")
-
-    sns.scatterplot(ax=axes[1], data=df, x=iris.feature_names[2], y=iris.feature_names[3],
-                    hue='target_name', palette='Set1')
-    axes[1].set_title("Petal: Panjang vs Lebar")
-
-    st.pyplot(fig)
-
 # Halaman 4: Foto Bunga
-else page == "🌸 Foto Bunga":
+elif page == "🌸 Foto Bunga":
     st.title("🌸 Foto Jenis Bunga Iris")
     st.markdown("Berikut adalah gambar dari tiga spesies bunga Iris:")
 
@@ -126,3 +108,20 @@ else page == "🌸 Foto Bunga":
     with col3:
         st.image("https://upload.wikimedia.org/wikipedia/commons/6/60/Iris_virginica.jpg", caption="Virginica", use_column_width=True)
 
+
+# Halaman 3: Visualisasi
+else:
+    st.title("📊 Visualisasi Data Iris")
+    st.write("Scatter plot fitur untuk melihat pola antara spesies.")
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    sns.scatterplot(ax=axes[0], data=df, x=iris.feature_names[0], y=iris.feature_names[1],
+                    hue='target_name', palette='Set2')
+    axes[0].set_title("Sepal: Panjang vs Lebar")
+
+    sns.scatterplot(ax=axes[1], data=df, x=iris.feature_names[2], y=iris.feature_names[3],
+                    hue='target_name', palette='Set1')
+    axes[1].set_title("Petal: Panjang vs Lebar")
+
+    st.pyplot(fig)
