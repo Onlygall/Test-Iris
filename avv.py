@@ -94,7 +94,7 @@ elif page == "🔮 Prediksi":
     })
 
 # Halaman 3: Visualisasi
-else:
+elif:
     st.title("📊 Visualisasi Data Iris")
     st.write("Scatter plot fitur untuk melihat pola antara spesies.")
 
@@ -111,7 +111,7 @@ else:
     st.pyplot(fig)
 
 # Halaman 4: Foto Bunga
-elif page == "🌸 Foto Bunga":
+else page == "🌸 Foto Bunga":
     st.title("🌸 Foto Jenis Bunga Iris")
     st.markdown("Berikut adalah gambar dari tiga spesies bunga Iris:")
 
