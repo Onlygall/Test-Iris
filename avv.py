@@ -47,15 +47,6 @@ if model is None:
 st.sidebar.title("🧪 Iris Classifier")
 page = st.sidebar.radio("Pilih Halaman", ["📄 Deskripsi Data", "🔮 Prediksi", "📊 Visualisasi"])
 
-# Sidebar untuk navigasi
-st.sidebar.title("🧪 Iris Classifier")
-page = st.sidebar.radio("Pilih Halaman", [
-    "📄 Deskripsi Data", 
-    "🔮 Prediksi", 
-    "📊 Visualisasi", 
-    "🌸 Foto Bunga"  # <-- Tambahkan ini
-])
-
 # Halaman 1: Deskripsi Data
 if page == "📄 Deskripsi Data":
     st.title("📄 Deskripsi Dataset Iris")
@@ -79,15 +70,19 @@ elif page == "🔮 Prediksi":
     st.title("🔮 Prediksi Spesies Iris")
     st.write("Masukkan data bunga di bawah ini:")
 
+    # Input fitur
     sepal_length = st.slider('Panjang Sepal (cm)', 4.0, 8.0, 5.0)
     sepal_width = st.slider('Lebar Sepal (cm)', 2.0, 4.5, 3.0)
     petal_length = st.slider('Panjang Petal (cm)', 1.0, 7.0, 4.0)
     petal_width = st.slider('Lebar Petal (cm)', 0.1, 2.5, 1.0)
 
+    # Prediksi
     input_data = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
     prediction = model.predict(input_data)
-    prediction_idx = int(np.array(prediction).flatten()[0])
+    prediction_idx = int(np.array(prediction).flatten()[0])  # Perbaiki baris ini
     prediction_proba = model.predict_proba(input_data)[0]
+
+    #predicted_species = str(iris.target_names[prediction_idx]).capitalize()
 
     predicted_species = str(iris.target_names[prediction_idx]).capitalize()
     st.success(f"Prediksi: **{predicted_species}**")
@@ -97,9 +92,8 @@ elif page == "🔮 Prediksi":
         'Versicolor': [prediction_proba[1]],
         'Virginica': [prediction_proba[2]],
     })
-
 # Halaman 3: Visualisasi
-elif page == "📊 Visualisasi":
+else:
     st.title("📊 Visualisasi Data Iris")
     st.write("Scatter plot fitur untuk melihat pola antara spesies.")
 
@@ -114,3 +108,18 @@ elif page == "📊 Visualisasi":
     axes[1].set_title("Petal: Panjang vs Lebar")
 
     st.pyplot(fig)
+# Halaman 4: Foto Bunga
+elif page == "🌸 Foto Bunga":
+    st.title("🌸 Foto Jenis Bunga Iris")
+    st.markdown("Berikut adalah gambar dari tiga spesies bunga Iris:")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.image("https://upload.wikimedia.org/wikipedia/commons/4/41/Iris_setosa_2.jpg", caption="Setosa", use_column_width=True)
+
+    with col2:
+        st.image("https://upload.wikimedia.org/wikipedia/commons/9/9f/Iris_versicolor_3.jpg", caption="Versicolor", use_column_width=True)
+
+    with col3:
+        st.image("https://upload.wikimedia.org/wikipedia/commons/6/60/Iris_virginica.jpg", caption="Virginica", use_column_width=True) benarkan code tersebut
